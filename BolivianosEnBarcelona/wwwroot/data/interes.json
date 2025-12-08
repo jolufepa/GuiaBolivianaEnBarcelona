@@ -1,0 +1,30 @@
+﻿[
+  {
+    "title": "Consulado General de Bolivia en Barcelona",
+    "description": "Información oficial y trámites consulares (pasaportes, visas, poderes, etc.).",
+    "address": " Via Layetana Nº 45, Piso 5to, Of. 2 Código Postal 08003 – Barcelona",
+    "contactInfo": "+34 938585821",
+    "linkUrl": "https://consulados.cancilleria.gob.bo/barcelona/"
+  },
+  {
+    "title": "Servicio de Extranjería (Policía Nacional)",
+    "description": "Citas previa para DNI,Pasaporte.",
+    "address": "Ver web oficial",
+    "contactInfo": "Pedir cita previa",
+    "linkUrl": "https://www.citapreviadnie.es/citaPreviaDni/"
+  },
+  {
+    "title": "Fedebol Federación Entidades Bolivianas",
+    "description": "Federación de entidades bolivianas en Cataluña",
+    "address": "Via Layetana 16 CCOO Barcelona",
+    "contactInfo": "677 56 34 98",
+    "linkUrl": "https://www.facebook.com/federacionbolivianosencatalunya/?locale=es_ES"
+  },
+  {
+    "title": "Servicio de Extranjería",
+    "description": "Asignaciones,Renovaciones documentacion extranjera.",
+    "address": "Ver web oficial",
+    "contactInfo": "Pedir cita previa",
+    "linkUrl": "https://icp.administracionelectronica.gob.es/icpplus/index.html"
+  }
+]

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Bolivianos en Barcelona - Guía Oficial</title>
+
+    <base href="/" />
+
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="Boli.png" />
+    <link href="BolivianosEnBarcelona.styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <meta name="description" content="Encuentra restaurantes, abogados, envíos y servicios de la comunidad boliviana en Barcelona. La guía más completa para residentes y recién llegados." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="🇧🇴 Guía de Bolivianos en Barcelona" />
+    <meta property="og:description" content="¿Buscas salteñas, trámites o ayuda? Entra al directorio oficial de nuestra comunidad en Cataluña." />
+    <meta property="og:image" content="Images/portada.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bolivianos en Barcelona" />
+    <meta name="twitter:description" content="El directorio de negocios y servicios para la comunidad boliviana." />
+    <meta name="twitter:image" content="Images/portada.jpg" />
+
+    <script>
+        (function () {
+            // Delegación robusta: subimos por el árbol hasta encontrar el botón con la clase .load-video-btn
+            function findLoadBtn(node) {
+                if (!node) return null;
+                // Si llegamos a un nodo de texto, subimos a su padre
+                if (node.nodeType === Node.TEXT_NODE) node = node.parentElement;
+                while (node) {
+                    if (node.nodeType === Node.ELEMENT_NODE && node.classList && node.classList.contains('load-video-btn')) {
+                        return node;
+                    }
+                    node = node.parentElement;
+                }
+                return null;
+            }
+
+            document.addEventListener('click', function (e) {
+                try {
+                    var btn = findLoadBtn(e.target);
+                    if (!btn) return;
+
+                    // Soporta tanto data-bs-target como dataset.bsTarget
+                    var targetSelector = btn.getAttribute('data-bs-target') || btn.dataset && btn.dataset.bsTarget;
+                    if (!targetSelector) return;
+
+                    var container = document.querySelector(targetSelector);
+                    if (!container) return;
+
+                    var iframe = container.querySelector('iframe.lazy-video[data-src]');
+                    if (!iframe) return;
+
+                    if (!iframe.getAttribute('data-loaded')) {
+                        var dataSrc = iframe.getAttribute('data-src');
+                        if (dataSrc) {
+                            iframe.src = dataSrc;
+                            iframe.setAttribute('data-loaded', '1');
+                            // Log para depuración ligera
+                            if (window.console && console.debug) console.debug('[lazy-video] cargado:', dataSrc);
+                        }
+                    }
+                } catch (ex) {
+                    console.warn('Error manejando carga de video:', ex);
+                }
+            }, false);
+        })();
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <script>
+        Blazor.start();
+    </script>
+</body>
+
+</html>

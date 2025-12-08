@@ -1,0 +1,8 @@
+﻿{
+  "navigationFallback": {
+    "rewrite": "/index.html"
+  },
+  "mimeTypes": {
+    ".json": "application/json"
+  }
+}

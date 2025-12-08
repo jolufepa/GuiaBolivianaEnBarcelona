@@ -1,0 +1,23 @@
+﻿[
+  {
+    "title": "Cómo Empadronarse en Barcelona",
+    "summary": "Requisito obligatorio para vivir. Pide cita previa y mira los documentos necesarios aquí.",
+    "linkUrl": "https://seuelectronica.ajuntament.barcelona.cat/oficinavirtual/es/tramit/20200001402",
+    "icon": "bi-house-door-fill",
+    "color": "primary"
+  },
+  {
+    "title": "Trámites de Extranjería (TIE/NIE)",
+    "summary": "Portal oficial para pedir cita previa de huellas y recogida de tarjeta.",
+    "linkUrl": "https://icp.administracionelectronica.gob.es/icpplus/index.html",
+    "icon": "bi-person-vcard-fill",
+    "color": "success"
+  },
+  {
+    "title": "Homologación de Títulos",
+    "summary": "Guía del Ministerio para validar tus estudios bolivianos en España.",
+    "linkUrl": "https://universidades.sede.gob.es/procedimientos/portada/ida/3513/idp/1029",
+    "icon": "bi-mortarboard-fill",
+    "color": "warning"
+  }
+]

@@ -1,0 +1,143 @@
+﻿@page "/interes"
+@inject HttpClient Http
+@using System.Text.Json.Serialization
+
+<PageTitle>Puntos de Interés y Guías</PageTitle>
+
+<div class="container mt-4 mb-5">
+
+    <h3 class="text-center mb-4 fw-bold">🏛️ Direcciones Importantes</h3>
+    <p class="lead text-muted text-center mb-5">
+        Contactos directos con consulados, hospitales y servicios de emergencia.
+    </p>
+
+    @if (recursos == null)
+    {
+        <div class="text-center py-3">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando direcciones...</p>
+        </div>
+    }
+    else
+    {
+        <div class="mb-5">
+            @foreach (var item in recursos)
+            {
+                <a href="@item.LinkUrl" target="_blank" class="card text-decoration-none text-dark shadow-sm border-0 mb-3 hover-effect">
+                    <div class="card-body p-4">
+                        <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0 fw-bold text-primary">@item.Title</h5>
+                            <small class="text-muted"><i class="bi bi-box-arrow-up-right"></i></small>
+                        </div>
+
+                        <p class="text-muted mb-3">@item.Description</p>
+
+                        <div class="d-md-flex justify-content-between align-items-center border-top pt-3">
+                            <small class="text-secondary d-block">
+                                <i class="bi bi-geo-alt-fill me-1"></i> @item.Address
+                            </small>
+                            @if (!string.IsNullOrEmpty(item.ContactInfo))
+                            {
+                                <span class="badge bg-light text-dark border mt-2 mt-md-0 p-2">
+                                    <i class="bi bi-telephone-fill me-1"></i> @item.ContactInfo
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+
+    <div class="bg-light p-4 rounded-3 shadow-sm mt-5">
+        <h3 class="fw-bold mb-3"><i class="bi bi-journal-bookmark-fill text-danger"></i> Guías Rápidas</h3>
+        <p class="text-muted mb-4">Información oficial para facilitarte la vida en Barcelona.</p>
+
+        @if (guias == null)
+        {
+            <div class="text-center py-3">
+                <p>Cargando guías...</p>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var guia in guias)
+                {
+                    <div class="col-md-4 mb-3">
+                        <a href="@guia.LinkUrl" target="_blank" class="card h-100 text-decoration-none hover-effect border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi @guia.Icon fs-1 text-@guia.Color"></i>
+                                </div>
+                                <h5 class="card-title fw-bold text-dark">@guia.Title</h5>
+                                <p class="card-text small text-muted">@guia.Summary</p>
+                                <span class="btn btn-outline-@guia.Color btn-sm mt-2">Leer Guía</span>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+</div>
+
+@code {
+    // Definimos las clases AQUÍ para evitar errores
+    public class CommunityResource
+    {
+        [JsonPropertyName("title")] public string Title { get; set; } = "";
+        [JsonPropertyName("description")] public string Description { get; set; } = "";
+        [JsonPropertyName("address")] public string Address { get; set; } = "";
+        [JsonPropertyName("contactInfo")] public string ContactInfo { get; set; } = "";
+        [JsonPropertyName("linkUrl")] public string LinkUrl { get; set; } = "#";
+    }
+
+    public class UsefulGuide
+    {
+        [JsonPropertyName("title")] public string Title { get; set; } = "";
+        [JsonPropertyName("summary")] public string Summary { get; set; } = "";
+        [JsonPropertyName("linkUrl")] public string LinkUrl { get; set; } = "#";
+        [JsonPropertyName("icon")] public string Icon { get; set; } = "bi-file-text";
+        [JsonPropertyName("color")] public string Color { get; set; } = "primary";
+    }
+
+    private CommunityResource[]? recursos;
+    private UsefulGuide[]? guias;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // 1. Creamos un número único basado en la hora actual
+            var version = DateTime.Now.Ticks;
+
+            // 2. Lo agregamos al final de la URL usando el símbolo $ (interpolación)
+            // Esto obliga al navegador a descargar el archivo de nuevo sí o sí.
+            var taskRecursos = Http.GetFromJsonAsync<CommunityResource[]>($"data/interes.json?v={version}");
+
+            Task<UsefulGuide[]?> taskGuias;
+            try
+            {
+                // Hacemos lo mismo con el otro archivo por si acaso
+                taskGuias = Http.GetFromJsonAsync<UsefulGuide[]>($"data/guias.json?v={version}");
+            }
+            catch
+            {
+                taskGuias = Task.FromResult<UsefulGuide[]?>(new UsefulGuide[0]);
+            }
+
+            await Task.WhenAll(taskRecursos, taskGuias);
+
+            recursos = await taskRecursos;
+            guias = await taskGuias;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+}

@@ -1,0 +1,49 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://www.facebook.com/groups/1703600096469959/" target="_blank" class="btn btn-link text-decoration-none">
+                <span class="bi bi-facebook"></span> Unirse al Grupo
+            </a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+
+        <footer class="mt-5 py-4 text-center text-white" style="background-color: #1a1a1a; border-top: 4px solid #D52B1E;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <h5 class="fw-bold">Bolivianos en Barcelona</h5>
+                        <p class="small text-muted">
+                            Conectando a nuestra comunidad en Cataluña.
+                            Apoyando el emprendimiento y la integración.
+                        </p>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <h5 class="fw-bold">Información Legal</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="aviso-legal" class="btn btn-link btn-sm text-white text-decoration-none p-0">Aviso Legal</a></li>
+                            <li><a href="privacidad" class="btn btn-link btn-sm text-white text-decoration-none p-0">Política de Privacidad</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <h5 class="fw-bold">Comunidad</h5>
+                        <a href="https://www.facebook.com/BolivianosinBarcelona" target="_blank" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-facebook"></i> Facebook Oficial
+                        </a>
+                        <p class="small text-muted mt-2">© @DateTime.Now.Year Todos los derechos reservados.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+</div>

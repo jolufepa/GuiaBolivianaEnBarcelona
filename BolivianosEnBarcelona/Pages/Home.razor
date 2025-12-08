@@ -1,0 +1,155 @@
+﻿@page "/"
+@using BolivianosEnBarcelona.Models
+@inject HttpClient Http
+
+<PageTitle>Inicio - Bolivianos en Barcelona</PageTitle>
+
+<div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light"
+     style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('Images/portada.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px;
+            color: white;">
+
+    <div class="col-md-8 p-lg-5 mx-auto my-5">
+        <h1 class="display-4 fw-bold text-white">Bolivianos en Barcelona</h1>
+        <p class="lead fw-normal mb-4 text-white">
+            Un punto de encuentro entre los Andes y el Mediterráneo.
+            Descubre nuestra gastronomía, cultura y servicios en Cataluña.
+        </p>
+
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="directorio" class="btn btn-warning btn-lg px-4 gap-3 fw-bold">
+                <i class="bi bi-search"></i> Buscar Negocio
+            </a>
+            <a href="https://forms.gle/V3eaWeGZSrnH4avf8"
+               target="_blank"
+               class="btn btn-outline-light btn-lg px-4">
+                <i class="bi bi-pencil-square"></i> Registrar mi Negocio
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row align-items-center mb-3">
+        <div class="col">
+            <h3 class="fw-bold"><i class="bi bi-star-fill text-warning"></i> Recomendados de la Semana</h3>
+        </div>
+        <div class="col-auto">
+            <a href="directorio" class="text-decoration-none">Ver todos &rarr;</a>
+        </div>
+    </div>
+
+    @if (negociosDestacados == null)
+    {
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in negociosDestacados)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-primary shadow-sm">
+                        <div class="position-absolute top-0 end-0 m-2" style="z-index: 10;">
+                            <span class="badge bg-warning text-dark">⭐ Destacado</span>
+                        </div>
+
+                        <a href="negocio/@item.Id">
+                            <img src="@item.ImageUrl"
+                                 class="card-img-top"
+                                 alt="@item.Name"
+                                 style="height: 180px; object-fit: contain; background-color: #ffffff; padding: 5px; cursor: pointer;">
+                        </a>
+
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">
+                                <a href="negocio/@item.Id" class="text-decoration-none text-dark stretched-link">
+                                    @item.Name
+                                </a>
+                            </h5>
+
+                            <span class="badge bg-secondary mb-2">@item.Category</span>
+                            <p class="card-text text-truncate">@item.Description</p>
+
+                            <div class="position-relative" style="z-index: 20;">
+                                <a href="@item.WhatsAppLink" target="_blank" class="btn btn-outline-success btn-sm w-100">
+                                    <i class="bi bi-whatsapp"></i> Contactar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<a href="https://wa.me/34623935521?text=Hola,%20quisiera%20informaci%C3%B3n%20sobre%20la%20Gu%C3%ADa%20Boliviana"
+   target="_blank"
+   class="btn-whatsapp-float"
+   title="Contactar con el Administrador">
+    <i class="bi bi-whatsapp"></i>
+</a>
+
+<style>
+    /* Estilo para el botón flotante */
+    .btn-whatsapp-float {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #25d366;
+        color: white;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        font-size: 30px;
+        box-shadow: 2px 2px 3px #999;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .btn-whatsapp-float:hover {
+            background-color: #128c7e;
+            transform: scale(1.1);
+            color: white;
+        }
+</style>
+
+@code {
+    private Business[]? negociosDestacados;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // 1. Generamos el sello de tiempo
+            var version = DateTime.Now.Ticks;
+
+            // 2. Añadimos ?v={version} a la URL
+            // Así nos aseguramos de que los "Recomendados" sean siempre los más recientes
+            var todos = await Http.GetFromJsonAsync<Business[]>($"data/negocios.json?v={version}");
+
+            if (todos != null)
+            {
+                negociosDestacados = todos
+                    .Where(n => n.IsPromoted)
+                    .OrderBy(n => Guid.NewGuid()) // Esto los mezcla aleatoriamente cada vez
+                    .Take(3)
+                    .ToArray();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cargando destacados: {ex.Message}");
+        }
+    }
+}
