@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
+    <div class="sidebar d-none d-md-block">
         <NavMenu />
     </div>
 
@@ -12,7 +12,7 @@
             </a>
         </div>
 
-        <article class="content px-4">
+        <article class="content px-4 pb-5 mb-5">
             @Body
         </article>
 
@@ -46,4 +46,29 @@
             </div>
         </footer>
     </main>
+
+    <nav class="mobile-nav d-md-none fixed-bottom bg-dark text-white border-top border-danger border-4">
+        <div class="d-flex justify-content-around py-2">
+            <a href="" class="text-white text-center text-decoration-none px-1">
+                <i class="bi bi-house-door-fill fs-4"></i>
+                <div style="font-size: 0.65rem;">Inicio</div>
+            </a>
+            <a href="directorio" class="text-white text-center text-decoration-none px-1">
+                <i class="bi bi-search fs-4"></i>
+                <div style="font-size: 0.65rem;">Buscar</div>
+            </a>
+            <a href="eventos" class="text-white text-center text-decoration-none px-1">
+                <i class="bi bi-calendar-event fs-4"></i>
+                <div style="font-size: 0.65rem;">Eventos</div>
+            </a>
+            <a href="interes" class="text-white text-center text-decoration-none px-1">
+                <i class="bi bi-info-circle fs-4"></i>
+                <div style="font-size: 0.65rem;">Info</div>
+            </a>
+            <a href="acerca-de" class="text-white text-center text-decoration-none px-1">
+                <i class="bi bi-people-fill fs-4"></i>
+                <div style="font-size: 0.65rem;">Nosotros</div>
+            </a>
+        </div>
+    </nav>
 </div>

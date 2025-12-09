@@ -1,47 +1,75 @@
-# Script de Despliegue Profesional a Cloudflare Pages
+# Script de Despliegue Maestro - BolivianosEnBarcelona
+# -----------------------------------------------------
+
+# CONFIGURACIÓN DE RUTAS
 $ProjectName = "guiabolivianabarcelona"
-$ProjectFile = "BolivianosEnBarcelona\BolivianosEnBarcelona.csproj" 
-# Apuntamos también al archivo de pruebas
+$WebProject  = "BolivianosEnBarcelona\BolivianosEnBarcelona.csproj" 
 $TestProject = "BolivianosEnBarcelona.Tests\BolivianosEnBarcelona.Tests.csproj"
+
+# ⚠️ AQUÍ ESTÁ LA CLAVE: Apuntamos a tu proyecto DataSync
+# Asumo que la carpeta se llama "DataSync" y el archivo .csproj también.
+# Si tu .csproj tiene otro nombre, cámbialo aquí.
+$SyncProject = "DataSync\DataSync.csproj"  
+
 $OutputFolder = "output"
 
-Write-Host "🚀 Iniciando despliegue profesional..." -ForegroundColor Cyan
+Write-Host "🚀 INICIANDO PROTOCOLO DE DESPLIEGUE..." -ForegroundColor Cyan
 
-# 1. Limpiar compilaciones previas
-Write-Host "🧹 Limpiando archivos antiguos..." -ForegroundColor Yellow
+# ==========================================
+# PASO 1: SINCRONIZACIÓN DE DATOS (DataSync)
+# ==========================================
+Write-Host "🤖 Ejecutando DataSync (Contentful -> JSON)..." -ForegroundColor Magenta
+
+# Verificamos si existe el proyecto antes de intentar correrlo
+if (Test-Path $SyncProject) {
+    dotnet run --project $SyncProject
+    
+    # Si DataSync falla (ej. error de API), detenemos todo para no subir datos rotos
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "❌ ERROR CRÍTICO: DataSync falló. Revisa los logs arriba." -ForegroundColor Red
+        exit
+    }
+    Write-Host "✅ Datos actualizados correctamente." -ForegroundColor Green
+}
+else {
+    Write-Host "⚠️ ADVERTENCIA: No encontré el proyecto DataSync en: $SyncProject" -ForegroundColor Yellow
+    Write-Host "   El despliegue continuará con los datos antiguos." -ForegroundColor Yellow
+}
+
+# ==========================================
+# PASO 2: LIMPIEZA
+# ==========================================
+Write-Host "🧹 Limpiando archivos temporales..." -ForegroundColor Yellow
 if (Test-Path $OutputFolder) { Remove-Item $OutputFolder -Recurse -Force }
-dotnet clean $ProjectFile -c Release
+dotnet clean $WebProject -c Release > $null
 
-# --- NUEVO PASO: EJECUTAR PRUEBAS ---
+# ==========================================
+# PASO 3: PRUEBAS UNITARIAS
+# ==========================================
 Write-Host "🧪 Ejecutando pruebas unitarias..." -ForegroundColor Magenta
 dotnet test $TestProject -c Release
 
-# Si las pruebas fallan, DETENER TODO
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ ¡ALERTA! Las pruebas fallaron. Se cancela el despliegue para proteger la web." -ForegroundColor Red
-    Write-Host "   Revisa los errores arriba y corrígelos antes de subir." -ForegroundColor Red
+    Write-Host "❌ ALERTA: Las pruebas fallaron. Despliegue cancelado." -ForegroundColor Red
     exit
 }
-Write-Host "✅ Pruebas superadas. Continuando..." -ForegroundColor Green
-# ------------------------------------
+Write-Host "✅ Pruebas superadas." -ForegroundColor Green
 
-# 2. Compilar versión OPTIMIZADA (Release)
-Write-Host "🏗️  Compilando SOLO la web (Blazor)..." -ForegroundColor Yellow
-dotnet publish $ProjectFile -c Release -o $OutputFolder
+# ==========================================
+# PASO 4: COMPILACIÓN (BUILD)
+# ==========================================
+Write-Host "🏗️  Compilando Web (Release)..." -ForegroundColor Yellow
+dotnet publish $WebProject -c Release -o $OutputFolder
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Error en la compilación." -ForegroundColor Red
     exit
 }
 
-# 3. Verificar que existe la web
-if (-not (Test-Path "$OutputFolder\wwwroot\index.html")) {
-    Write-Host "❌ Error CRÍTICO: No se encuentra index.html." -ForegroundColor Red
-    exit
-}
-
-# 4. Subir a Cloudflare Pages
-Write-Host "☁️  Subiendo a Producción (Main)..." -ForegroundColor Yellow
+# ==========================================
+# PASO 5: SUBIDA A CLOUDFLARE
+# ==========================================
+Write-Host "☁️  Subiendo a Producción..." -ForegroundColor Cyan
 npx wrangler pages deploy "$OutputFolder\wwwroot" --project-name $ProjectName --branch main --commit-dirty
 
-Write-Host "✅ ¡Web en Producción actualizada y probada!" -ForegroundColor Green
+Write-Host "🎉 ¡ÉXITO! Web actualizada y sincronizada." -ForegroundColor Green
