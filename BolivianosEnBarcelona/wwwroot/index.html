@@ -98,6 +98,20 @@
             }
         });
     </script>
+    <script>
+        window.obtenerUbicacion = () => {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject("Geolocalización no soportada");
+                } else {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => resolve({ lat: position.coords.latitude, lon: position.coords.longitude }),
+                        (error) => reject("Permiso denegado o error")
+                    );
+                }
+            });
+        };
+    </script>
 </body>
 
 </html>

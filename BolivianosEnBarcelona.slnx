@@ -3,6 +3,7 @@
     <File Path="deploy.ps1" />
   </Folder>
   <Project Path="Bolivianos.Updater/Bolivianos.Updater.csproj" />
+  <Project Path="BolivianosEnBarcelona.tests/BolivianosEnBarcelona.tests.csproj" Id="006a9d13-ede3-47b3-96e9-bb54502810d4" />
   <Project Path="BolivianosEnBarcelona/BolivianosEnBarcelona.csproj" />
   <Project Path="DataSync/DataSync.csproj" />
 </Solution>

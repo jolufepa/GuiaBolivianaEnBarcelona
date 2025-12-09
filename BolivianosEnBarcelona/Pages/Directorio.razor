@@ -1,5 +1,6 @@
 ﻿@page "/directorio"
 @inject HttpClient Http
+@inject IJSRuntime JSRuntime
 @using System.Text
 @using System.Globalization
 @using BolivianosEnBarcelona.Models
@@ -9,7 +10,8 @@
 <div class="container mt-4">
     <h2 class="mb-4 fw-bold text-center">Encuentra lo que buscas</h2>
 
-    <div class="input-group mb-4 shadow-sm">
+    @* --- BARRA DE BÚSQUEDA --- *@
+    <div class="input-group mb-3 shadow-sm">
         <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
         <input type="text"
                class="form-control border-start-0"
@@ -18,6 +20,33 @@
                @bind:event="oninput" />
     </div>
 
+    @* --- BOTÓN DE UBICACIÓN (CERCA DE MÍ) --- *@
+    <div class="d-flex justify-content-center mb-4">
+        <button class="btn @(ordenarPorDistancia ? "btn-success" : "btn-outline-success") rounded-pill px-4"
+                @onclick="ToggleCercaDeMi"
+                disabled="@buscandoUbicacion">
+            @if (buscandoUbicacion)
+            {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span>Localizando...</span>
+            }
+            else
+            {
+                <i class="bi bi-geo-alt-fill me-1"></i>
+                @(ordenarPorDistancia ? "Mostrando lo más cercano" : "Ver negocios cerca de mí")
+            }
+        </button>
+    </div>
+
+    @* Mensaje de error si falla la geolocalización *@
+    @if (!string.IsNullOrEmpty(mensajeErrorGeo))
+    {
+        <div class="alert alert-warning text-center py-2 mb-4" role="alert">
+            <small>@mensajeErrorGeo</small>
+        </div>
+    }
+
+    @* --- FILTROS DE CATEGORÍA --- *@
     <div class="d-flex flex-wrap gap-2 mb-4 justify-content-center">
         <button class="btn @(categoriaActual == "" ? "btn-dark" : "btn-outline-dark") rounded-pill px-3"
                 @onclick='() => CambiarCategoria("")'>
@@ -35,23 +64,24 @@
                 @onclick='() => CambiarCategoria("Paquetería")'>
             📦 Paquetería
         </button>
-
         <button class="btn @(categoriaActual == "Viajes" ? "btn-info" : "btn-outline-info") rounded-pill px-3"
                 @onclick='() => CambiarCategoria("Viajes")'>
             ✈️ Viajes
         </button>
-
         <button class="btn @(categoriaActual == "Otros Servicios" ? "btn-secondary" : "btn-outline-secondary") rounded-pill px-3"
                 @onclick='() => CambiarCategoria("Otros Servicios")'>
             ✂️ Otros Servicios
         </button>
     </div>
 
+    @* --- CONTADOR DE RESULTADOS --- *@
     <p class="text-muted small mb-3">
         Mostrando <strong>@NegociosFiltrados.Count</strong> resultados
         @(string.IsNullOrEmpty(categoriaActual) ? "" : $"en {categoriaActual}")
+        @(ordenarPorDistancia ? " · Ordenados por cercanía" : "")
     </p>
 
+    @* --- LISTADO DE TARJETAS --- *@
     <div class="row">
         @if (NegociosFiltrados.Any())
         {
@@ -61,11 +91,14 @@
                     <div class="card h-100 shadow-sm border-0 hover-effect">
                         <div style="height: 200px; overflow: hidden; position: relative; background-color: #f8f9fa;">
                             <a href="negocio/@negocio.Id">
+                                @* Optimización: loading="lazy" *@
                                 <img src="@negocio.ImageUrl"
                                      class="card-img-top w-100 h-100"
                                      style="object-fit: contain; padding: 15px;"
-                                     alt="@negocio.Name">
+                                     alt="@negocio.Name"
+                                     loading="lazy">
                             </a>
+
                             @if (negocio.IsPromoted)
                             {
                                 <div class="position-absolute top-0 end-0 m-2">
@@ -73,14 +106,44 @@
                                 </div>
                             }
                         </div>
+
                         <div class="card-body">
-                            <span class="badge bg-light text-dark border mb-2">@negocio.Category</span>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-light text-dark border">@negocio.Category</span>
+
+                                @* --- MEJORA: Lógica de visualización de distancia --- *@
+                                @if (ordenarPorDistancia && usuarioLat.HasValue)
+                                {
+                                    @if (negocio.Latitude != 0 && negocio.Longitude != 0)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                                            <i class="bi bi-cursor-fill small"></i> @CalcularDistanciaKm(negocio).ToString("0.0") km
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        @* Etiqueta gris para los que no tienen ubicación *@
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary"
+                                              title="Ubicación no disponible en mapa">
+                                            <i class="bi bi-geo-alt-slash small"></i>
+                                        </span>
+                                    }
+                                }
+                            </div>
+
                             <h5 class="card-title fw-bold">
                                 <a href="negocio/@negocio.Id" class="text-decoration-none text-dark">@negocio.Name</a>
                             </h5>
+
                             <p class="card-text text-muted small text-truncate">@negocio.Description</p>
-                            <p class="card-text small mb-0"><i class="bi bi-geo-alt text-danger"></i> @negocio.Address</p>
+
+                            @* Ocultar dirección si está vacía *@
+                            @if (!string.IsNullOrEmpty(negocio.Address))
+                            {
+                                <p class="card-text small mb-0"><i class="bi bi-geo-alt text-danger"></i> @negocio.Address</p>
+                            }
                         </div>
+
                         <div class="card-footer bg-white border-0 pb-3">
                             <div class="d-grid gap-2">
                                 <a href="negocio/@negocio.Id" class="btn btn-outline-primary btn-sm">Ver Detalles</a>
@@ -92,6 +155,7 @@
         }
         else
         {
+            @* --- ESTADO VACÍO --- *@
             <div class="col-12 text-center py-5">
                 <div class="mb-3">
                     <i class="bi bi-search fs-1 text-muted opacity-50"></i>
@@ -100,8 +164,8 @@
                 <p class="text-muted mb-4">¿Conoces algún negocio o servicio que debería estar aquí?</p>
 
                 <div class="d-flex justify-content-center gap-3 flex-wrap">
-                    <button class="btn btn-outline-dark" @onclick='() => { textoBusqueda = ""; categoriaActual = ""; }'>
-                        Limpiar filtros y ver todo
+                    <button class="btn btn-outline-dark" @onclick='() => { textoBusqueda = ""; categoriaActual = ""; ordenarPorDistancia = false; }'>
+                        Limpiar filtros
                     </button>
                     <a href="https://docs.google.com/forms/d/e/1FAIpQLSf6KU43yHT_bt8mIoNTKHN-tobB6-eTNhPkqXP-1Z0imKnvtg/viewform?usp=dialog"
                        target="_blank"
@@ -115,82 +179,176 @@
 </div>
 
 @code {
+    // Lista completa de datos
     List<Business> todosLosNegocios = new List<Business>();
+
+    // Variables de Filtro
     string textoBusqueda = "";
-    string categoriaActual = ""; // Variable para el filtro de botones
+    string categoriaActual = "";
 
-    
-    // Filtro combinado: Texto AND Categoría (¡Ahora insensible a acentos!)
-    List<Business> NegociosFiltrados
-    {
-        get
-        {
-            // 1. Limpiamos el texto de búsqueda
-            var terminoLimpio = QuitarAcentos(textoBusqueda).ToLower();
+    // Variables de Geolocalización
+    double? usuarioLat;
+    double? usuarioLon;
+    bool buscandoUbicacion = false;
+    bool ordenarPorDistancia = false;
+    string mensajeErrorGeo = "";
 
-            // 2. Limpiamos TAMBIÉN la categoría seleccionada (ej: "Gastronomía" -> "gastronomia")
-            var categoriaLimpia = QuitarAcentos(categoriaActual).ToLower();
-
-            return todosLosNegocios
-                .Where(n =>
-                    (string.IsNullOrEmpty(terminoLimpio) ||
-                     QuitarAcentos(n.Name).ToLower().Contains(terminoLimpio) ||
-                     QuitarAcentos(n.Description).ToLower().Contains(terminoLimpio))
-                    &&
-                    // AQUÍ ESTÁ EL CAMBIO MAGICO:
-                    // Comparamos la categoría del negocio limpia contra la del botón limpia
-                    (string.IsNullOrEmpty(categoriaLimpia) ||
-                     QuitarAcentos(n.Category ?? "").ToLower() == categoriaLimpia)
-                )
-                .ToList();
-        }
-    }
+    // Clase auxiliar para recibir respuesta de JS
+    class CoordenadaJS { public double lat { get; set; } public double lon { get; set; } }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // 1. Generamos el sello de tiempo (truco anti-caché)
+            // Truco anti-caché para descargar siempre la versión más reciente
             var version = DateTime.Now.Ticks;
-
-            // 2. Inyectamos la variable {version} en la URL
-            // Así el navegador cree que es un archivo nuevo y lo descarga sí o sí
             var datos = await Http.GetFromJsonAsync<Business[]>($"data/negocios.json?v={version}");
 
-            if (datos != null) todosLosNegocios = datos.ToList();
+            if (datos != null)
+            {
+                todosLosNegocios = datos.ToList();
+
+                // --- OPTIMIZACIÓN DE RENDIMIENTO ---
+                // Pre-calculamos la "versión limpia" de los textos una sola vez al arrancar.
+                // Así, buscar luego es instantáneo.
+                foreach (var negocio in todosLosNegocios)
+                {
+                    negocio.PrepararBusqueda();
+                }
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            Console.WriteLine($"Error cargando datos: {ex.Message}");
+        }
+    }
+
+    // --- LÓGICA DEL FILTRO ---
+    List<Business> NegociosFiltrados
+    {
+        get
+        {
+            // 1. Limpiamos solo lo que ha escrito el usuario (rápido)
+            var terminoLimpio = QuitarAcentosHelper(textoBusqueda).ToLower();
+            var categoriaLimpia = QuitarAcentosHelper(categoriaActual).ToLower();
+
+            // 2. Filtramos usando las propiedades pre-calculadas (NormalizedName, etc.)
+            var query = todosLosNegocios
+                .Where(n =>
+                    (string.IsNullOrEmpty(terminoLimpio) ||
+                     n.NormalizedName.Contains(terminoLimpio) ||
+                     n.NormalizedDescription.Contains(terminoLimpio))
+                    &&
+                    (string.IsNullOrEmpty(categoriaLimpia) ||
+                     n.NormalizedCategory == categoriaLimpia)
+                );
+
+            // 3. Ordenamos según el modo
+            if (ordenarPorDistancia && usuarioLat.HasValue && usuarioLon.HasValue)
+            {
+                // Ordenar por distancia (menor a mayor)
+                return query.OrderBy(n => CalcularDistancia(usuarioLat.Value, usuarioLon.Value, n.Latitude, n.Longitude)).ToList();
+            }
+            else
+            {
+                // Orden normal: Destacados primero
+                return query.OrderByDescending(n => n.IsPromoted).ToList();
+            }
+        }
+    }
+
+    // --- GEOLOCALIZACIÓN ---
+    async Task ToggleCercaDeMi()
+    {
+        if (ordenarPorDistancia)
+        {
+            // Si ya estaba activo, lo desactivamos
+            ordenarPorDistancia = false;
+            return;
+        }
+
+        // Si no tenemos coordenadas, las pedimos al navegador
+        if (!usuarioLat.HasValue)
+        {
+            buscandoUbicacion = true;
+            mensajeErrorGeo = "";
+            try
+            {
+                var pos = await JSRuntime.InvokeAsync<CoordenadaJS>("window.obtenerUbicacion");
+                usuarioLat = pos.lat;
+                usuarioLon = pos.lon;
+
+                ordenarPorDistancia = true;
+
+                // Limpiamos filtros de texto para mostrar "todo lo cercano"
+                textoBusqueda = "";
+                categoriaActual = "";
+            }
+            catch (Exception)
+            {
+                mensajeErrorGeo = "No pudimos obtener tu ubicación. Verifica permisos/GPS.";
+                ordenarPorDistancia = false;
+            }
+            finally
+            {
+                buscandoUbicacion = false;
+            }
+        }
+        else
+        {
+            // Si ya teníamos coordenadas guardadas, solo activamos el flag
+            ordenarPorDistancia = true;
+            textoBusqueda = "";
+            categoriaActual = "";
         }
     }
 
     void CambiarCategoria(string cat)
     {
         categoriaActual = cat;
-        // Opcional: Limpiar texto al cambiar categoría para no confundir
-        // textoBusqueda = "";
     }
-    // Función auxiliar para normalizar texto (quitar tildes y diéresis)
-    string QuitarAcentos(string texto)
+
+    // --- MATEMÁTICAS (HAVERSINE) ---
+    double CalcularDistancia(double lat1, double lon1, double lat2, double lon2)
+    {
+        // Si el negocio no tiene coordenadas (0,0), devolver distancia enorme
+        if (lat2 == 0 && lon2 == 0) return 99999;
+
+        var R = 6371; // Radio Tierra km
+        var dLat = ToRad(lat2 - lat1);
+        var dLon = ToRad(lon2 - lon1);
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                Math.Cos(ToRad(lat1)) * Math.Cos(ToRad(lat2)) *
+                Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        return R * c;
+    }
+
+    double ToRad(double deg) => deg * (Math.PI / 180);
+
+    // Helper para la vista (UI)
+    double CalcularDistanciaKm(Business negocio)
+    {
+        if (!usuarioLat.HasValue) return 0;
+        return CalcularDistancia(usuarioLat.Value, usuarioLon.Value, negocio.Latitude, negocio.Longitude);
+    }
+
+    // --- UTILIDAD LOCAL ---
+    // Usada solo para limpiar el input del usuario. Los negocios ya se limpian solos en Business.cs
+    string QuitarAcentosHelper(string texto)
     {
         if (string.IsNullOrWhiteSpace(texto)) return string.Empty;
-
-        // 1. Normalizamos a formato KD (separa la letra 'á' en 'a' + '´')
         var normalizedString = texto.Normalize(NormalizationForm.FormD);
         var stringBuilder = new StringBuilder();
 
         foreach (var c in normalizedString)
         {
-            // 2. Nos quedamos solo con los caracteres que NO son marcas de acento
             var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
             if (unicodeCategory != UnicodeCategory.NonSpacingMark)
             {
                 stringBuilder.Append(c);
             }
         }
-
-        // 3. Devolvemos el texto limpio y normalizado a formato C
         return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
     }
 }

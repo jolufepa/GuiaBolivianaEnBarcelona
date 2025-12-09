@@ -1,5 +1,17 @@
 ﻿[
   {
+    "Id": "6HghnjhXnjJT1W5ClqAzeX",
+    "Name": "Restaurante La Brujita",
+    "Description": "La comida boliviana mas sabrosa de barcelona sobretodo tripitas",
+    "Category": "Gastronomía",
+    "Address": "Carrer de Pujós, 58, 08904 L'Hospitalet de Llobregat, Barcelona",
+    "PhoneNumber": "",
+    "ImageUrl": "https://images.ctfassets.net/45pv77895txv/6Mxekfdbx4HGDkop6tcQRP/b2492c7a6751fb7a2dc10702ecb63f2c/351333253_1008252267221240_4344608650584270291_n.jpg?w=500&q=80",
+    "IsPromoted": false,
+    "Latitude": 41.3729619,
+    "Longitude": 2.1177893
+  },
+  {
     "Id": "5elNQic6OVX4paVrw2ztMs",
     "Name": "Restaurante Mi Casa Castelao",
     "Description": "Ofrecemos Planchitas, Sillpancho,Pique Macho, SALON DE FIESTAS ESPECIALES",
@@ -7,7 +19,9 @@
     "Address": " Passeig dels Ferrocarrils Catalans, 182, 08940 Cornellà de Llobregat, Barcelona",
     "PhoneNumber": "34 633 46 72 79",
     "ImageUrl": "https://images.ctfassets.net/45pv77895txv/xfAuHphdiMsJi5nhxF2nt/eed6004cd4dd6179e57b8c1c02afc02c/326531931_582489246583921_5090922568386793090_n.jpg?w=500&q=80",
-    "IsPromoted": true
+    "IsPromoted": true,
+    "Latitude": 41.352788,
+    "Longitude": 2.084875
   },
   {
     "Id": "4XhygBuz7OP4f8MFUkeq1F",
@@ -17,7 +31,8 @@
     "Address": "Carrer de les Moreres, 113, 08820 El Prat de Llobregat, Barcelona",
     "PhoneNumber": "",
     "ImageUrl": "https://images.ctfassets.net/45pv77895txv/4kE7VJwCJ8Vcz4lcW1SSTh/111d84139e3ef2b8f972e8a396915cbc/Mi_Llajta_Prat.jpg?w=500&q=80",
-    "IsPromoted": true
+    "IsPromoted": true,
+    "Latitude": 41.3286364,
+    "Longitude": 2.1056774
   }
-
 ]
