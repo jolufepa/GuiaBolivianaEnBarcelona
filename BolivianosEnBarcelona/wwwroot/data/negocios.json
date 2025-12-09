@@ -18,15 +18,6 @@
     "PhoneNumber": "",
     "ImageUrl": "https://images.ctfassets.net/45pv77895txv/4kE7VJwCJ8Vcz4lcW1SSTh/111d84139e3ef2b8f972e8a396915cbc/Mi_Llajta_Prat.jpg?w=500&q=80",
     "IsPromoted": true
-  },
-  {
-    "Id": "6HghnjhXnjJT1W5ClqAzeX",
-    "Name": "Restaurante La Brujita",
-    "Description": "La comida boliviana mas sabrosa de barcelona sobretodo tripitas",
-    "Category": "Gastronomía",
-    "Address": "",
-    "PhoneNumber": "",
-    "ImageUrl": "https://images.ctfassets.net/45pv77895txv/6Mxekfdbx4HGDkop6tcQRP/b2492c7a6751fb7a2dc10702ecb63f2c/351333253_1008252267221240_4344608650584270291_n.jpg?w=500&q=80",
-    "IsPromoted": false
   }
+
 ]

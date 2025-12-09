@@ -367,3 +367,8 @@ obj/
 DataSync/
 launchSettings.json/
 Bolivianos.Updater/
+output/
+node_modules/
+.wrangler/
+package-lock.json
+package.json

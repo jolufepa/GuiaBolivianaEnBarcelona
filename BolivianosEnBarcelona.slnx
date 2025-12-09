@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Elementos de la solución/">
+    <File Path="deploy.ps1" />
+  </Folder>
   <Project Path="Bolivianos.Updater/Bolivianos.Updater.csproj" />
   <Project Path="BolivianosEnBarcelona/BolivianosEnBarcelona.csproj" />
   <Project Path="DataSync/DataSync.csproj" />
