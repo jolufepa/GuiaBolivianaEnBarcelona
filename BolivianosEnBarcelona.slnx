@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="../Bolivianos.Updater/Bolivianos.Updater.csproj" Id="3d3b5cf4-d73c-4d2d-ad5d-b17f474c7aeb" />
-  <Project Path="../DataSync/DataSync.csproj" Id="266933bd-86b8-4579-8c8e-dad7cc2a74d5" />
+  <Project Path="Bolivianos.Updater/Bolivianos.Updater.csproj" />
   <Project Path="BolivianosEnBarcelona/BolivianosEnBarcelona.csproj" />
+  <Project Path="DataSync/DataSync.csproj" />
 </Solution>

@@ -1,5 +1,15 @@
 ﻿[
   {
+    "Id": "4XhygBuz7OP4f8MFUkeq1F",
+    "Name": "Restaurante Mi Llajta ",
+    "Description": "Restaurante acogedor, familiar y adecuado para celebraciones (bodas, comuniones, cumpleaños, etc.) con una amplia gastronomía boliviana.",
+    "Category": "Gastronomía",
+    "Address": "Carrer de les Moreres, 113, 08820 El Prat de Llobregat, Barcelona",
+    "PhoneNumber": "",
+    "ImageUrl": "https://images.ctfassets.net/45pv77895txv/4kE7VJwCJ8Vcz4lcW1SSTh/111d84139e3ef2b8f972e8a396915cbc/Mi_Llajta_Prat.jpg?w=500&q=80",
+    "IsPromoted": true
+  },
+  {
     "Id": "6HghnjhXnjJT1W5ClqAzeX",
     "Name": "Restaurante La Brujita",
     "Description": "La comida boliviana mas sabrosa de barcelona sobretodo tripitas",
