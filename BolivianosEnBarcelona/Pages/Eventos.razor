@@ -14,7 +14,12 @@
 
     @if (feed == null)
     {
-        <div class="text-center"><p>Cargando eventos...</p></div>
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando eventos...</p>
+        </div>
     }
     else
     {
@@ -26,11 +31,13 @@
 
                         @if (item.HasImage)
                         {
-                            <div style="height: 200px; overflow: hidden; background-color: #f0f0f0;">
+                            <div style="height: 220px; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
+
                                 <img src="@item.ImageUrl"
-                                     class="card-img-top w-100 h-100"
-                                     style="object-fit: cover; object-position: top;"
-                                     alt="@item.Title">
+                                     class="card-img-top"
+                                     style="width: 100%; height: 100%; object-fit: contain;"
+                                     alt="@item.Title"
+                                     onerror="this.style.display='none'; this.parentElement.classList.add('d-flex', 'align-items-center', 'justify-content-center'); this.parentElement.innerHTML='<i class=\'bi bi-card-image text-black-50 fs-1\'></i>';">
                             </div>
                         }
                         else
@@ -82,7 +89,6 @@
         [JsonPropertyName("link")]
         public string Link { get; set; } = "#";
 
-        // NUEVO CAMPO DE IMAGEN
         [JsonPropertyName("imageUrl")]
         public string ImageUrl { get; set; } = string.Empty;
 
@@ -109,15 +115,11 @@
     {
         try
         {
-            // 1. Generamos el número aleatorio (truco anti-caché)
             var version = DateTime.Now.Ticks;
-
-            // 2. Usamos el signo $ y añadimos ?v={version} a la URL
             feed = await Http.GetFromJsonAsync<CommunityFeed[]>($"data/eventos.json?v={version}");
 
             if (feed != null)
             {
-                // La lógica de ordenamiento se queda igual, no cambia nada aquí
                 feed = feed.OrderByDescending(item => DateTime.TryParse(item.DateString, out var date) ? date : DateTime.MinValue).ToArray();
             }
         }
