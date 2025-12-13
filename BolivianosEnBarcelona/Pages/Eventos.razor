@@ -37,6 +37,7 @@
                                      class="card-img-top"
                                      style="width: 100%; height: 100%; object-fit: contain;"
                                      alt="@item.Title"
+                                     loading="lazy"
                                      onerror="this.style.display='none'; this.parentElement.classList.add('d-flex', 'align-items-center', 'justify-content-center'); this.parentElement.innerHTML='<i class=\'bi bi-card-image text-black-50 fs-1\'></i>';">
                             </div>
                         }
@@ -69,6 +70,12 @@
 </div>
 
 @code {
+    // Clase para leer el archivo version.json
+    public class VersionInfo
+    {
+        public string hash { get; set; } = "";
+    }
+
     public class CommunityFeed
     {
         [JsonPropertyName("date")]
@@ -115,8 +122,28 @@
     {
         try
         {
-            var version = DateTime.Now.Ticks;
-            feed = await Http.GetFromJsonAsync<CommunityFeed[]>($"data/eventos.json?v={version}");
+            // 1. Obtener la versión inteligente (leemos el archivo chivato)
+            string versionActual = "1"; // Valor por defecto porsiacaso
+
+            try
+            {
+                // Descargamos version.json (es minúsculo, no afecta rendimiento)
+                var vInfo = await Http.GetFromJsonAsync<VersionInfo>("data/version.json");
+                if (vInfo != null && !string.IsNullOrEmpty(vInfo.hash))
+                {
+                    versionActual = vInfo.hash;
+                }
+            }
+            catch
+            {
+                // Si falla (ej. el archivo no existe aún), usamos "1" y sigue funcionando
+                Console.WriteLine("No se encontró version.json, usando cache default.");
+            }
+
+            // 2. Descargar el JSON pesado usando el HASH real
+            // Si 'versionActual' no ha cambiado desde la última visita,
+            // el navegador NO descargará nada y usará su memoria caché. ¡Instantáneo!
+            feed = await Http.GetFromJsonAsync<CommunityFeed[]>($"data/eventos.json?v={versionActual}");
 
             if (feed != null)
             {
@@ -125,7 +152,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            Console.WriteLine($"Error cargando eventos: {ex.Message}");
         }
     }
 }

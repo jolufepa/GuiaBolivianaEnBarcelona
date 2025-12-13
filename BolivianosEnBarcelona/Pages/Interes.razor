@@ -86,7 +86,7 @@
 </div>
 
 @code {
-    // Definimos las clases AQUÍ para evitar errores
+    // Definimos las clases AQUÍ
     public class CommunityResource
     {
         [JsonPropertyName("title")] public string Title { get; set; } = "";
@@ -105,6 +105,12 @@
         [JsonPropertyName("color")] public string Color { get; set; } = "primary";
     }
 
+    // Clase para leer la versión del robot
+    public class VersionInfo
+    {
+        public string hash { get; set; } = "";
+    }
+
     private CommunityResource[]? recursos;
     private UsefulGuide[]? guias;
 
@@ -112,21 +118,35 @@
     {
         try
         {
-            // 1. Creamos un número único basado en la hora actual
-            var version = DateTime.Now.Ticks;
+            // 1. Obtener el HASH de versión (Inteligente)
+            string versionActual = "1";
 
-            // 2. Lo agregamos al final de la URL usando el símbolo $ (interpolación)
-            // Esto obliga al navegador a descargar el archivo de nuevo sí o sí.
-            var taskRecursos = Http.GetFromJsonAsync<CommunityResource[]>($"data/interes.json?v={version}");
+            try
+            {
+                var vInfo = await Http.GetFromJsonAsync<VersionInfo>("data/version.json");
+                if (vInfo != null && !string.IsNullOrEmpty(vInfo.hash))
+                {
+                    versionActual = vInfo.hash;
+                }
+            }
+            catch
+            {
+                // Si falla (no existe el archivo aún), seguimos con "1"
+                Console.WriteLine("No se encontró version.json, usando cache default.");
+            }
+
+            // 2. Usamos ese HASH para pedir los archivos de datos
+            // Así aprovechamos la carga en paralelo que ya tenías implementada
+            var taskRecursos = Http.GetFromJsonAsync<CommunityResource[]>($"data/interes.json?v={versionActual}");
 
             Task<UsefulGuide[]?> taskGuias;
             try
             {
-                // Hacemos lo mismo con el otro archivo por si acaso
-                taskGuias = Http.GetFromJsonAsync<UsefulGuide[]>($"data/guias.json?v={version}");
+                taskGuias = Http.GetFromJsonAsync<UsefulGuide[]>($"data/guias.json?v={versionActual}");
             }
             catch
             {
+                // Si falla el de guías, devolvemos array vacío para que no rompa la página entera
                 taskGuias = Task.FromResult<UsefulGuide[]?>(new UsefulGuide[0]);
             }
 
@@ -137,7 +157,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            Console.WriteLine($"Error general cargando Interes: {ex.Message}");
         }
     }
 }

@@ -196,21 +196,40 @@
     // Clase auxiliar para recibir respuesta de JS
     class CoordenadaJS { public double lat { get; set; } public double lon { get; set; } }
 
+    // Clase para leer la versión
+    class VersionInfo { public string hash { get; set; } = ""; }
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Truco anti-caché para descargar siempre la versión más reciente
-            var version = DateTime.Now.Ticks;
-            var datos = await Http.GetFromJsonAsync<Business[]>($"data/negocios.json?v={version}");
+            // 1. Obtener la versión inteligente (leemos el archivo chivato)
+            string versionActual = "1";
+
+            try
+            {
+                // Descargamos version.json
+                var vInfo = await Http.GetFromJsonAsync<VersionInfo>("data/version.json");
+                if (vInfo != null && !string.IsNullOrEmpty(vInfo.hash))
+                {
+                    versionActual = vInfo.hash;
+                }
+            }
+            catch
+            {
+                // Si falla, usamos "1" y sigue funcionando
+                Console.WriteLine("No se encontró version.json, usando cache default.");
+            }
+
+            // 2. Descargar el JSON pesado usando el HASH real
+            var datos = await Http.GetFromJsonAsync<Business[]>($"data/negocios.json?v={versionActual}");
 
             if (datos != null)
             {
                 todosLosNegocios = datos.ToList();
 
                 // --- OPTIMIZACIÓN DE RENDIMIENTO ---
-                // Pre-calculamos la "versión limpia" de los textos una sola vez al arrancar.
-                // Así, buscar luego es instantáneo.
+                // Pre-calculamos la "versión limpia" de los textos
                 foreach (var negocio in todosLosNegocios)
                 {
                     negocio.PrepararBusqueda();
