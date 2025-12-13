@@ -151,11 +151,26 @@
                                     Ver Detalles
                                 </a>
 
+                                @* ================================================================ *@
+                                @* [NUEVO] Botón MAPA (Solo si el robot generó el enlace) *@
+                                @* ================================================================ *@
+                                @if (!string.IsNullOrEmpty(negocio.GoogleMapsUrl))
+                                {
+                                    <a href="@negocio.GoogleMapsUrl"
+                                       target="_blank"
+                                       class="btn btn-info btn-sm text-white"
+                                       title="Ver ubicación en Google Maps"
+                                       @onclick:stopPropagation="true">
+                                        <i class="bi bi-geo-alt-fill"></i>
+                                    </a>
+                                }
+                                @* ================================================================ *@
+
                                 @* Botón WHATSAPP (solo si tiene teléfono) *@
                                 @if (!string.IsNullOrEmpty(negocio.PhoneNumber))
                                 {
                                     <a href="@negocio.WhatsAppLink" target="_blank" class="btn btn-success btn-sm text-white"
-                                       @onclick:stopPropagation="true">
+                                       @onclick:stopPropagation="true" title="Contactar por WhatsApp">
                                         <i class="bi bi-whatsapp"></i>
                                     </a>
                                 }

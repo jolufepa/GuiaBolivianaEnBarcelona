@@ -25,7 +25,7 @@
         @* TARJETA PRINCIPAL *@
         <div class="card shadow rounded-4 overflow-hidden border-0 mb-5">
             <div class="row g-0">
-                @* IMAGEN PRINCIPAL: Ajustada para verse entera *@
+                @* IMAGEN PRINCIPAL *@
                 <div class="col-md-6 bg-light d-flex align-items-center justify-content-center"
                      style="min-height: 350px;">
 
@@ -35,7 +35,6 @@
                     }
                     else
                     {
-                        @* CORRECCIÓN 1: Imagen principal completa (contain) *@
                         <img src="@negocio.ImageUrl"
                              class="img-fluid"
                              style="width: 100%; height: auto; max-height: 500px; object-fit: contain;"
@@ -66,14 +65,20 @@
                                         <small class="text-muted d-block">Dirección</small>
                                         <span class="fw-bold d-block text-dark text-decoration-none">@negocio.Address</span>
                                     </div>
-                                    @if (negocio.Latitude != 0)
+
+                                    @* ================================================================ *@
+                                    @* [NUEVO] Botón MAPA ROBUSTO (Usando el enlace del Robot) *@
+                                    @* ================================================================ *@
+                                    @if (!string.IsNullOrEmpty(negocio.GoogleMapsUrl))
                                     {
-                                        <a href="http://maps.google.com/?q=@negocio.Latitude,@negocio.Longitude"
+                                        <a href="@negocio.GoogleMapsUrl"
                                            target="_blank"
-                                           class="btn btn-outline-danger btn-sm rounded-pill ms-2">
-                                            <i class="bi bi-map"></i> Ir
+                                           class="btn btn-danger btn-sm rounded-pill ms-3 px-3 shadow-sm"
+                                           title="Abrir ubicación exacta en Google Maps">
+                                            <i class="bi bi-geo-alt-fill me-1"></i> Ver en Mapa
                                         </a>
                                     }
+                                    @* ================================================================ *@
                                 </div>
                             }
 
@@ -101,7 +106,6 @@
                         <div class="card h-100 border-0 shadow-sm">
                             <a href="negocio/@item.Id" class="text-decoration-none">
 
-                                @* CORRECCIÓN 2: Imágenes relacionadas completas. *@
                                 <div class="bg-white d-flex align-items-center justify-content-center border-bottom" style="height: 150px; width: 100%;">
                                     <img src="@item.ImageUrl"
                                          style="max-height: 100%; max-width: 100%; object-fit: contain;"
@@ -209,13 +213,10 @@ else
 
         try
         {
-            // Intentamos usar la API nativa del navegador
             await JSRuntime.InvokeVoidAsync("navigator.share", new { title = titulo, text = texto, url = url });
         }
         catch
         {
-            // Si falla (PC escritorio), mostramos el link para copiar
-            // Podrías mejorar esto con "Clipboard.writeText" si quisieras en el futuro
             await JSRuntime.InvokeVoidAsync("alert", $"Copia este enlace para compartir:\n{url}");
         }
     }

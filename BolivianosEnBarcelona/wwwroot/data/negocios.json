@@ -1,5 +1,18 @@
 ﻿[
   {
+    "Id": "qAXeQ2klg6aEjcauQZ4FS",
+    "Name": "Bar Mi Llajta",
+    "Description": "Menus diarios, escabeche, tripitas, platos a la carta",
+    "Category": "Gastronomía",
+    "Address": "Carrer d' Amadeu Vives, 33, 08906 L'Hospitalet de Llobregat, Barcelona",
+    "PhoneNumber": "",
+    "ImageUrl": "https://images.ctfassets.net/45pv77895txv/2xuBuuAn1dTpkS95dZmoSm/702ae269d7a7f3e1fc3f5384e85000d2/Bar_Mi_Llajta_Hospi.png?w=500&q=80",
+    "IsPromoted": false,
+    "Latitude": 41.3737759,
+    "Longitude": 2.1041616,
+    "GoogleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Bar%20Mi%20Llajta%2C%20Carrer%20d%27%20Amadeu%20Vives%2C%2033%2C%2008906%20L%27Hospitalet%20de%20Llobregat%2C%20Barcelona%2C%20Espa%C3%B1a"
+  },
+  {
     "Id": "6HghnjhXnjJT1W5ClqAzeX",
     "Name": "Restaurante La Brujita",
     "Description": "La comida boliviana mas sabrosa de barcelona sobretodo tripitas",
@@ -9,7 +22,8 @@
     "ImageUrl": "https://images.ctfassets.net/45pv77895txv/6Mxekfdbx4HGDkop6tcQRP/b2492c7a6751fb7a2dc10702ecb63f2c/351333253_1008252267221240_4344608650584270291_n.jpg?w=500&q=80",
     "IsPromoted": false,
     "Latitude": 41.3729619,
-    "Longitude": 2.1177893
+    "Longitude": 2.1177893,
+    "GoogleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Restaurante%20La%20Brujita%2C%20Carrer%20de%20Puj%C3%B3s%2C%2058%2C%2008904%20L%27Hospitalet%20de%20Llobregat%2C%20Barcelona%2C%20Espa%C3%B1a"
   },
   {
     "Id": "5elNQic6OVX4paVrw2ztMs",
@@ -21,7 +35,8 @@
     "ImageUrl": "https://images.ctfassets.net/45pv77895txv/xfAuHphdiMsJi5nhxF2nt/eed6004cd4dd6179e57b8c1c02afc02c/326531931_582489246583921_5090922568386793090_n.jpg?w=500&q=80",
     "IsPromoted": true,
     "Latitude": 41.352788,
-    "Longitude": 2.084875
+    "Longitude": 2.084875,
+    "GoogleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Restaurante%20Mi%20Casa%20Castelao%2C%20Passeig%20dels%20Ferrocarrils%20Catalans%2C%20182%2C%2008940%20Cornell%C3%A0%20de%20Llobregat%2C%20Barcelona%2C%20Espa%C3%B1a"
   },
   {
     "Id": "4XhygBuz7OP4f8MFUkeq1F",
@@ -33,6 +48,7 @@
     "ImageUrl": "https://images.ctfassets.net/45pv77895txv/4kE7VJwCJ8Vcz4lcW1SSTh/111d84139e3ef2b8f972e8a396915cbc/Mi_Llajta_Prat.jpg?w=500&q=80",
     "IsPromoted": true,
     "Latitude": 41.3286364,
-    "Longitude": 2.1056774
+    "Longitude": 2.1056774,
+    "GoogleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Restaurante%20Mi%20Llajta%2C%20Carrer%20de%20les%20Moreres%2C%20113%2C%2008820%20El%20Prat%20de%20Llobregat%2C%20Barcelona%2C%20Espa%C3%B1a"
   }
 ]

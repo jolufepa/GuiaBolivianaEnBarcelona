@@ -21,6 +21,15 @@ namespace BolivianosEnBarcelona.Models
         public double Latitude { get; set; }
         public double Longitude { get; set; }
 
+        // ================================================================
+        // [NUEVO CAMPO] Enlace pre-generado por el robot
+        // ================================================================
+        // Este campo leerá la URL lista para usar que guardó el robot en el JSON.
+        // Si no hay dato, se inicia como cadena vacía para evitar errores.
+        public string GoogleMapsUrl { get; set; } = string.Empty;
+        // ================================================================
+
+
         public string WhatsAppLink => string.IsNullOrEmpty(PhoneNumber) ? "#" : $"https://wa.me/{PhoneNumber.Replace(" ", "").Replace("+", "")}";
         public string ImageUrl { get; set; } = "images/default.png";
         public bool IsPromoted { get; set; } = false;
