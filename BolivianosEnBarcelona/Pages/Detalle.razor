@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
 @using BolivianosEnBarcelona.Models
+@using System.Text.Json.Serialization
 
 @if (negocio != null)
 {
@@ -67,7 +68,7 @@
                                     </div>
                                     @if (negocio.Latitude != 0)
                                     {
-                                        <a href="https://www.google.com/maps/dir/?api=1&destination=@negocio.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture),@negocio.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                        <a href="http://maps.google.com/?q=@negocio.Latitude,@negocio.Longitude"
                                            target="_blank"
                                            class="btn btn-outline-danger btn-sm rounded-pill ms-2">
                                             <i class="bi bi-map"></i> Ir
@@ -100,14 +101,12 @@
                         <div class="card h-100 border-0 shadow-sm">
                             <a href="negocio/@item.Id" class="text-decoration-none">
 
-                                @* CORRECCIÓN 2: Imágenes relacionadas completas.
-                                   - Cambiado 'cover' por 'contain'
-                                   - Fondo blanco para rellenar espacios si la foto es estrecha
-                                   - Aumenté un poco la altura (150px) para que no se vean diminutas *@
+                                @* CORRECCIÓN 2: Imágenes relacionadas completas. *@
                                 <div class="bg-white d-flex align-items-center justify-content-center border-bottom" style="height: 150px; width: 100%;">
                                     <img src="@item.ImageUrl"
                                          style="max-height: 100%; max-width: 100%; object-fit: contain;"
-                                         alt="@item.Name">
+                                         alt="@item.Name"
+                                         loading="lazy">
                                 </div>
 
                                 <div class="card-body p-3">
@@ -142,6 +141,9 @@ else
     List<Business> relacionados = new List<Business>();
     bool cargando = true;
 
+    // Clase auxiliar para la versión
+    public class VersionInfo { public string hash { get; set; } = ""; }
+
     protected override async Task OnInitializedAsync()
     {
         cargando = true;
@@ -150,7 +152,20 @@ else
 
         try
         {
-            var todos = await Http.GetFromJsonAsync<Business[]>("data/negocios.json");
+            // 1. Obtener la versión inteligente
+            string versionActual = "1";
+            try
+            {
+                var vInfo = await Http.GetFromJsonAsync<VersionInfo>("data/version.json");
+                if (vInfo != null && !string.IsNullOrEmpty(vInfo.hash))
+                {
+                    versionActual = vInfo.hash;
+                }
+            }
+            catch { /* Ignorar si falla, usar default */ }
+
+            // 2. Cargar datos usando el Hash
+            var todos = await Http.GetFromJsonAsync<Business[]>($"data/negocios.json?v={versionActual}");
 
             if (todos != null)
             {
@@ -160,7 +175,7 @@ else
                 {
                     relacionados = todos
                         .Where(n => n.Category == negocio.Category && n.Id != negocio.Id)
-                        .OrderBy(x => Guid.NewGuid())
+                        .OrderBy(x => Guid.NewGuid()) // Randomizar relacionados
                         .Take(3)
                         .ToList();
                 }
@@ -194,11 +209,14 @@ else
 
         try
         {
+            // Intentamos usar la API nativa del navegador
             await JSRuntime.InvokeVoidAsync("navigator.share", new { title = titulo, text = texto, url = url });
         }
         catch
         {
-            await JSRuntime.InvokeVoidAsync("alert", $"Copia este enlace para compartir: {url}");
+            // Si falla (PC escritorio), mostramos el link para copiar
+            // Podrías mejorar esto con "Clipboard.writeText" si quisieras en el futuro
+            await JSRuntime.InvokeVoidAsync("alert", $"Copia este enlace para compartir:\n{url}");
         }
     }
 }
